@@ -10,7 +10,9 @@ export const createLibrary = () => {
 
   return {
     copysign_(x: number, y: number): number {
-      return (x < 0 || (x === 0 && Object.is(x, -0))) !== (y < 0 || (y === 0 && Object.is(y, -0))) ? -x : x
+      const xSignIsNeg = x < 0 || (x === 0 && Object.is(x, -0));
+      const ySignIsNeg = y < 0 || (y === 0 && Object.is(y, -0));
+      return ySignIsNeg === xSignIsNeg ? x : -x;
     },
     u64_to_s64_(x: bigint): bigint {
       u64[0] = x
@@ -110,6 +112,15 @@ export const createLibrary = () => {
     },
     i64_extend32_s_(x: bigint): bigint {
       return x & 0x8000_0000n ? x | 0xFFFF_FFFF_0000_0000n : x & 0xFFFF_FFFFn
+    },
+    nearest_(x: number): number {
+      // Round to nearest number, preferring multiples of 2
+      if (Number.isFinite(x) && !Number.isInteger(x)) {
+        if (Math.abs(x - Math.trunc(x)) === 0.5) {
+          return 2 * Math.round(x / 2);
+        }
+      }
+      return Math.round(x);
     },
   }
 }

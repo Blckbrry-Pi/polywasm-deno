@@ -1,6 +1,7 @@
-import { castToJS, castToWASM, compileCode, liveCastToWASM } from './compile'
-import { createLibrary } from './library'
-import { Desc, FuncType, Module, Type, moduleMap } from './parse'
+import { castToJS, castToWASM, liveCastToWASM } from "./defs.ts";
+import { compileCode } from "./compile.ts";
+import { createLibrary } from "./library.ts";
+import { Desc, FuncType, Module, Type, moduleMap } from "./parse.ts";
 
 export class Global {
   declare value: any

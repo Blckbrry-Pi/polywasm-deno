@@ -7,9 +7,9 @@
 // objects with metadata, but that's too much overhead). These tests are useful
 // as a guide but are not useful for continuous integration.
 
-import fs from 'fs'
-import url from 'url'
-import path from 'path'
+import fs from 'node:fs'
+import url from 'node:url'
+import path from 'node:path'
 
 const coreTestDir = path.join(url.fileURLToPath(import.meta.url), '..', 'core')
 
@@ -54,8 +54,15 @@ function runTests(wasm) {
         return { error: instance.error }
       }
 
+      const EXPORT_WASM = false;
+
+      let count = 1;
       function instance(bytes, imports = registry) {
         bytes = new Uint8Array(bytes.split('').map(x => x.charCodeAt(0)))
+        if (EXPORT_WASM) Deno.writeFileSync(
+          "${path.join(coreTestDir, "decomp", name.slice(0, name.length - 3))}" + \`-\${count++}.wasm\`,
+          bytes,
+        )
         try {
           const module = new WebAssembly.Module(bytes)
           const instance = new WebAssembly.Instance(module, imports)
@@ -130,9 +137,9 @@ console.log('\n===== Native =====')
 runTests(WebAssembly)
 
 console.log('\n===== Shim =====')
-import('../index.js').then(({ WebAssembly }) => runTests(WebAssembly))
+import('../src/index.ts').then(({ WebAssembly }) => runTests(WebAssembly))
 
-  .then(() => {
-    console.log('\n===== Minified Shim =====')
-    import('../index.min.js').then(({ WebAssembly }) => runTests(WebAssembly))
-  })
+  // .then(() => {
+  //   console.log('\n===== Minified Shim =====')
+  //   import('../src/index.ts').then(({ WebAssembly }) => runTests(WebAssembly))
+  // })

@@ -5,7 +5,7 @@
 // See the WebAssembly file format reference for more information:
 // https://webassembly.github.io/spec/core/binary/index.html
 
-import { Op } from './compile'
+import { Op } from "./defs.ts";
 
 const enum Section {
   Custom,

@@ -7,11 +7,9 @@
 // WebAssembly natively but is pretty expensive when running WebAssembly via JS
 // using BigInts. Avoiding unnecessary BigInts gives a decent performance boost.
 
-import { Op, Pack } from './compile'
+import { Op, Pack } from "./defs.ts";
 
-const enum Enable {
-  Stats = 0, // Set this to 1 to enable statistics
-}
+const ENABLE_STATS = false;
 
 type OpWithPayload =
   | Op.U32_LOAD
@@ -158,6 +156,7 @@ interface Rule {
   replace_?: Replace
   onlyIf_?: Check
 }
+
 
 const rules: Rule[] = [
   // load of (addr + constant) => merge constant into load's offset
@@ -625,7 +624,7 @@ export const compileOptimizations = (): (ast: Int32Array, constants: bigint[], a
                 childPtrVar,
                 childOpVar,
                 nested[operand as Expr]!,
-                Enable.Stats ? subMatch => buildStatName!(substituteMatch(match, operand as Expr, subMatch)) : null,
+                ENABLE_STATS ? subMatch => buildStatName!(substituteMatch(match, operand as Expr, subMatch)) : null,
                 reusableNodes,
                 placeholderVars,
               )
@@ -637,7 +636,7 @@ export const compileOptimizations = (): (ast: Int32Array, constants: bigint[], a
             // Make sure to preserve the output stack slot of the root node in
             // case this expression isn't inlined and we need to emit an
             // assignment to that stack slot.
-            if (Enable.Stats) code += `${recordStatsVar}(${JSON.stringify(buildStatName!(match))});`
+            if (ENABLE_STATS) code += `${recordStatsVar}(${JSON.stringify(buildStatName!(match))});`
             const replacePtr = constructReplacement(replace, placeholderVars, reusableNodes.slice(), `|${astVar}[${rootPtrVar}]&${~0 << Pack.OutSlotShift}`)
 
             // If we know how to optimize the resulting node, then continue to
@@ -795,9 +794,9 @@ export const compileOptimizations = (): (ast: Int32Array, constants: bigint[], a
     }
   }
   let code = `for(;;){var ${rootOpVar}=${astVar}[${rootPtrVar}]&${Pack.OpMask};`
-  compileRules(rootPtrVar, rootOpVar, rules, Enable.Stats ? matchToStatName : null, [], {})
+  compileRules(rootPtrVar, rootOpVar, rules, ENABLE_STATS ? matchToStatName : null, [], {})
   code += `return ${rootPtrVar}}`
-  return Enable.Stats
+  return ENABLE_STATS
     ? new Function(recordStatsVar, `return(${astVar},${constantsVar},${allocateNode},${rootPtrVar})=>{${code}}`)(recordStats)
     : new Function(astVar, constantsVar, allocateNode, rootPtrVar, code)
 }
