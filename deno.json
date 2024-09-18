@@ -1,5 +1,5 @@
 {
-  "name": "@blckbrry/polywasm-deno",
+  "name": "@blckbrry/polywasm",
   "version": "0.1.4",
   "exports": "./src/index.ts",
   "publish": {
