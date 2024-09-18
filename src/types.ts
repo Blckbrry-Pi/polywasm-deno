@@ -41,7 +41,7 @@ export function instantiate(input: BufferSource | Module, importObject?: Imports
     const module = new Module(input);
     return Promise.resolve({
         module,
-        instance: new Instance(input, importObject),
+        instance: new Instance(module, importObject),
     });
 }
 
