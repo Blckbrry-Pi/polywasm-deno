@@ -1,11 +1,11 @@
 // This file provides a way to parse a single WebAssembly function and convert
 // it to JavaScript. Functions are compiled lazily when they are first evaluated.
 
-import { Context, ContextField } from "./instantiate.ts";
-import { Library } from "./library.ts";
+import { type Context, ContextField } from "./instantiate.ts";
+import type { Library } from "./library.ts";
 import { compileOptimizations } from "./optimize.ts";
-import { FuncType, Type, WASM } from "./parse.ts";
-import { Op, Pack, BlockKind, Block, metaTable, MetaFlag } from "./defs.ts";
+import { type FuncType, Type, type WASM } from "./parse.ts";
+import { Op, Pack, BlockKind, type Block, metaTable, MetaFlag } from "./defs.ts";
 
 // The AST is stored in a fixed-sized array, which assumes we never generate an
 // AST bigger than this. This isn't so bad because we only ever generate an AST

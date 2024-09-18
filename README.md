@@ -19,19 +19,12 @@ Another reason to use this might be to play around with WebAssembly execution. F
 
 This library also exists because I thought building it would be an interesting challenge. I learned some new things about WebAssembly's file format and intermediate representation while building it.
 
-## How to use it
 
-You need to include this polyfill before code that uses the WebAssembly API:
+Additionally.... WASM doesn't work on Cloudflare Workers the way it works in
+Deno. While working on [OpenGB](https://opengb.dev), Rivet discovered an issue
+supporting both self-hosted Deno runtimes and managed CF Worker runtimes.
 
-```html
-<script type="module">
-  import { WebAssembly } from 'polywasm'
-  globalThis.WebAssembly = WebAssembly
-</script>
-<script src="app.js"></script>
-```
-
-The polyfill is small (only ~25kb when minified) and can potentially be optionally loaded only when needed. Keep in mind that this polyfill requires that your JavaScript environment supports the [`BigInt64Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt64Array) API. If you want to build the polyfill yourself instead of installing it through npm, you can clone this repo and run `npm ci` follwed by `npm run build`.
+This is currently acting as a patch 
 
 ## Limitations
 
@@ -44,30 +37,6 @@ Here are some limitations to be aware of:
 * **No NaN bit patterns:** This does not preserve NaN bit patterns. WebAssembly does this natively but JavaScript VMs canonicalize NaN bit patterns which prevents a JavaScript-based WebAssembly polyfill from preserving them.
 
 * **Limited API support:** This does not implement the full [WebAssembly API](https://developer.mozilla.org/en-US/docs/WebAssembly/JavaScript_interface). There's no reason it can't, but right now I have only implemented the parts of the API that I needed to be able to load and run a `.wasm` file and run the WebAssembly specification's core tests.
-
-## Performance
-
-These are the times to run a sample WebAssembly task using the polyfill. Each row is a result reported by [`bench/index.html`](./bench/index.html) for that browser.
-
-| Browser | Minimum time | Median time |
-|---|---|---|
-| Chrome (JIT) | 27ms | 37ms |
-| Firefox (JIT) | 79ms | 88ms |
-| Chrome (no JIT) | 94ms | 97ms |
-| Firefox (no JIT) | 127ms | 133ms |
-| Safari (no JIT) | 244ms | 256ms |
-
-These are the times for the same benchmark but with this polyfill's optimizations disabled (to demonstrate that the optimizations done by this polyfill improve run time):
-
-| Browser | Minimum time | Median time |
-|---|---|---|
-| Chrome (JIT) | 40ms | 55ms |
-| Firefox (JIT) | 132ms | 150ms |
-| Chrome (no JIT) | 131ms | 137ms |
-| Firefox (no JIT) | 188ms | 196ms |
-| Safari (no JIT) | 332ms | 354ms |
-
-The optimizations cause the benchmark to run 1.4x to 1.7x faster depending on the browser.
 
 ## Implementation details
 

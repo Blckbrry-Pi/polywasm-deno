@@ -62,6 +62,7 @@ const growContext = (context: Context, pagesDelta: number): number => {
     try {
       structuredClone(oldBytes.buffer, { transfer: [oldBytes.buffer] })
     } catch {
+      // TODO: Figure out what to do on this error
     }
   }
   return pageCount
